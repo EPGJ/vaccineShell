@@ -48,16 +48,7 @@ void read_command(tShell *shell)
 void exec_program(tShell *shell)
 {
 
-
-    char *envp[] = {
-        "PATH=/bin",
-        (char *)0};
-
-    strcpy(shell->cmd, "/bin/");
-    strcat(shell->cmd, shell->command);
-
-
-    execve(shell->cmd, shell->parameters,envp);
+    execvp(shell->command, shell->parameters);
 }
 int is_exit_command(tShell *shell)
 {
