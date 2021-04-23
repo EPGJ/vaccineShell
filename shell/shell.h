@@ -14,6 +14,7 @@
 
 typedef struct  {
     tCommand commands[NUMBER_COMMANDS_MAX];
+    int number_commands;
 } tShell;
 
 void read_commands(tShell *);

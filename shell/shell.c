@@ -9,6 +9,7 @@ void clean_screen()
 
 void read_commands(tShell *shell)
 {
+    shell->number_commands = 0;
     char line[1024];
     int len = 0, wspace_count = 0;
     
@@ -24,7 +25,6 @@ void read_commands(tShell *shell)
     }
     // Retorna se linha só contém white-space
     if (len == wspace_count) return;
-    printf("[%s]\n", line);
 
     // Separa e trata comandos digitados
     char *token, *rest;
@@ -34,7 +34,8 @@ void read_commands(tShell *shell)
     token = strtok_r(line, symbol, &rest);
     while(token!=NULL && (i++) < NUMBER_COMMANDS_MAX){
         shell->commands[i] = treat_command(trim(token));
-        print_command(shell->commands[i]);
+        shell->number_commands++;
+        //print_command(shell->commands[i]);
         token = strtok_r(rest, symbol, &rest);
     }
 
