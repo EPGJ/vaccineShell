@@ -11,13 +11,21 @@ tCommand treat_command(char* cmd_str) { // cmd_str = "comando arg1 ..."
 
 	// Lê parâmetros
 	token = strtok(NULL, " ");
-	for (int i = 0; token != NULL; i++) {
+	for (int i = 0; token != NULL && i < QTD_PARAMETERS_MAX; i++) {
 		strcpy(cmd.parameters[i], token);
 		cmd.number_parameters++;
 		token = strtok(NULL, " ");
 	}
+	//cmd.parameters[i] = NULL; // Ultimo parâmetro = NULL
  	return cmd;
 }
+
+// void exec_command(tCommand* command, int in, int out) {
+// 	//faz dup para redirecionar I/O primeiro se for preciso
+// 	//vacina se for fg
+// 	execvp(command->command, command->parameters);
+// 	perror("Could not execute command\n");
+// }
 
 void print_command(tCommand command) {
 	printf("command='%s' ", command.command);
