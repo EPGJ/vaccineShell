@@ -14,20 +14,17 @@ int main()
 
         type_prompt();
         read_command(&shell);
+        
         pid = fork();
-        if (pid == 0)
-        {
-            exec_program(&shell);
-        }
-        else
-        {
-            wait(NULL);
-        }
-
-        if (is_exit_command(&shell))
-        {
-            break;
-        }
+        // if (pid == 0){
+        //     exec_program(&shell);
+        // }
+        // else{
+        //     wait(NULL);
+        // }
+        // if (is_exit_command(&shell)){
+        //     break;
+        // }
     }
 
     return 0;

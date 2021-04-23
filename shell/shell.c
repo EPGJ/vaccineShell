@@ -14,10 +14,8 @@ void type_prompt()
 
 void read_command(tShell *shell)
 {
-
     char line[1024];
     char *commands;
-    const char s[2] = " ";
     int count = 0, i = 0;
     for (;;)
     {
@@ -34,26 +32,32 @@ void read_command(tShell *shell)
     commands = strtok(line, "\n");
     commands = strtok(line, " ");
 
-    while (commands != NULL)
-    {
-        shell->parameters[i++] = commands;
-        commands = strtok(NULL, " ");
-    }
-    // printf("(%s)\n", shell->parameters[0]);
 
+    do
+    {
+        shell->parameters[i++]= commands;
+        commands = strtok(NULL, " ");
+    } while (commands != NULL);
+
+    
+
+    shell->number_parameters = i;
     strcpy(shell->command, shell->parameters[0]);
 }
 
 void exec_program(tShell *shell)
 {
-    // printf("(%s)\n", shell->command);
-    // int i = 0;
-    // while (shell->parameters[i++] != NULL)
-    // {
-    //     printf("(%s)\n", shell->command);
-    // }
 
-    execvp(shell->command, shell->parameters);
+
+    char *envp[] = {
+        "PATH=/bin",
+        (char *)0};
+
+    strcpy(shell->cmd, "/bin/");
+    strcat(shell->cmd, shell->command);
+
+
+    execve(shell->cmd, shell->parameters,envp);
 }
 int is_exit_command(tShell *shell)
 {
@@ -63,4 +67,15 @@ int is_exit_command(tShell *shell)
     }
     else
         return 0;
+}
+
+// temporary function
+void display(tShell *shell)
+{
+    printf("command --> %s\n", shell->command);
+
+    for (int j = 0; j < shell->number_parameters; j++)
+    {
+        printf("arg[%d] == %s\n", j, shell->parameters[j]);
+    }
 }
