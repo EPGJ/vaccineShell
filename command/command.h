@@ -6,15 +6,20 @@
 #include <unistd.h>
 #include <string.h>
 
+#define COMMAND_MAX_LEN 100
+#define PARAMETER_MAX_LEN 20
 
+typedef struct command tCommand;
 
-
-typedef struct  {
-    char cmd[100];
-    char command[100];
-    char *parameters[20]; 
+struct command {
+    char command[COMMAND_MAX_LEN];
+    char *parameters[PARAMETER_MAX_LEN]; // no maximo 5 parametros, aqui foram colocados 6 pois o primeiro parametro do exec eh o proprio programa
     int number_parameters;
-} tCommand;
+};
+
+tCommand treat_command();
+void print_command(tCommand command);
+void exec_program(tCommand *);
 
 
 

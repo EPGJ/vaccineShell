@@ -13,9 +13,9 @@ int main()
     {
 
         type_prompt();
-        read_command(&shell);
+        read_commands(&shell);
         
-        pid = fork();
+        // pid = fork();
         // if (pid == 0){
         //     exec_program(&shell);
         // }
