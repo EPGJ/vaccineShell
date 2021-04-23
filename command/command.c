@@ -16,16 +16,24 @@ tCommand treat_command(char* cmd_str) { // cmd_str = "comando arg1 ..."
 		cmd.number_parameters++;
 		token = strtok(NULL, " ");
 	}
-	//cmd.parameters[i] = NULL; // Ultimo parâmetro = NULL
+	
  	return cmd;
 }
 
-// void exec_command(tCommand* command, int in, int out) {
-// 	//faz dup para redirecionar I/O primeiro se for preciso
-// 	//vacina se for fg
-// 	execvp(command->command, command->parameters);
-// 	perror("Could not execute command\n");
-// }
+void exec_command(tCommand* command, int in, int out) {
+	//TODO: faz dup para redirecionar I/O primeiro se for preciso
+	//TODO: vacina se for fg
+
+	int n_param = command->number_parameters;
+	char** param = malloc((1+n_param)*sizeof(char*));
+	for (int i = 0; i < n_param; i++) {
+		param[i] = command->parameters[i];
+	}
+	param[n_param] = NULL;
+
+	execvp(command->command, param);
+	perror("Could not execute command\n");
+}
 
 void print_command(tCommand command) {
 	printf("command='%s' ", command.command);
