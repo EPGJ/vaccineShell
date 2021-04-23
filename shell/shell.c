@@ -10,27 +10,32 @@ void clean_screen()
 void read_commands(tShell *shell)
 {
     char line[1024];
-    int count = 0;
+    int len = 0, wspace_count = 0;
+    
     for (;;)
     {
         int c = fgetc(stdin);
-        line[count++] = (char)c;
+        line[len++] = (char)c;
+        if (isspace(c)) wspace_count++; // contabiliza white-spaces
         if (c == '\n'){
-            line[count-1] = '\0';
+            line[len-1] = '\0';
             break;
         }
     }
-    // Trata se for apenas uma quebra de linha
-    if (count == 1) return;
+    // Retorna se linha só contém white-space
+    if (len == wspace_count) return;
+    printf("[%s]\n", line);
 
-    char* cmd_str;
+    // Separa e trata comandos digitados
+    char *token, *rest;
+    const char symbol[2] = "|";
     int i = -1;
-    cmd_str = strtok(line, "|");
-    while(cmd_str!=NULL && (i++) < NUMBER_COMMANDS_MAX){
-        shell->commands[i] = treat_command(trim(cmd_str));
+
+    token = strtok_r(line, symbol, &rest);
+    while(token!=NULL && (i++) < NUMBER_COMMANDS_MAX){
+        shell->commands[i] = treat_command(trim(token));
         print_command(shell->commands[i]);
-        // printf("(%s)\n", trim(cmd_str));
-        cmd_str = strtok(NULL, "|");
+        token = strtok_r(rest, symbol, &rest);
     }
 
 }
