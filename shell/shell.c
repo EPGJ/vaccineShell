@@ -46,12 +46,6 @@ void read_command(tShell *shell)
 
 void exec_program(tShell *shell)
 {
-    // printf("(%s)\n", shell->command);
-    // int i = 0;
-    // while (shell->parameters[i++] != NULL)
-    // {
-    //     printf("(%s)\n", shell->command);
-    // }
 
     execvp(shell->command, shell->parameters);
 }
