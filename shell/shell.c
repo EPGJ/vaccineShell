@@ -34,10 +34,10 @@ void read_commands(tShell *shell)
     for (int i = 0; token!=NULL && i < NUMBER_COMMANDS_MAX; i++){
         shell->commands[i] = treat_command(trim(token));
         shell->number_commands++;
-        print_command(shell->commands[i]);
+        // print_command(shell->commands[i]);
         token = strtok_r(rest, symbol, &rest);
     }
-    //exec_command(shell->commands[0], 0, 0);
+    exec_command(shell->commands[0], 0, 0);
 }
 
 void type_prompt()
