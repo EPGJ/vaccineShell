@@ -8,7 +8,7 @@
 
 #define COMMAND_MAX_LEN 100
 #define PARAMETER_MAX_LEN 20
-#define QTD_PARAMETERS_MAX 5
+#define QTD_PARAMETERS_MAX 3
 
 typedef struct command tCommand;
 
@@ -20,7 +20,7 @@ struct command {
 
 tCommand treat_command();
 void print_command(tCommand command);
-void exec_program(tCommand *);
+void exec_command(tCommand command, int in, int out); // mudar para shell ? 
 
 
 
