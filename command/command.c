@@ -3,8 +3,12 @@
 
 tCommand treat_command(char* cmd_str) { // cmd_str = "comando arg1 ..."
 	tCommand cmd;
+	cmd.number_parameters = 0;
+
+	// Lê comando
 	char *token = strtok(cmd_str, " ");
 	strcpy(cmd.command, token);
+
 	// Lê parâmetros
 	token = strtok(NULL, " ");
 	for (int i = 0; token != NULL; i++) {
@@ -16,7 +20,7 @@ tCommand treat_command(char* cmd_str) { // cmd_str = "comando arg1 ..."
 }
 
 void print_command(tCommand command) {
-	printf("COMMENT='%s' ", command.command);
+	printf("command='%s' ", command.command);
 
 	int i = 0, qtd_parameters = command.number_parameters;
 	while (i < qtd_parameters) {

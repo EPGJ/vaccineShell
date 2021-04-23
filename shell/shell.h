@@ -1,6 +1,6 @@
 #ifndef SHELL_H
 #define SHELL_H
-#define NUMBER_COMMANDS 5
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,10 +10,10 @@
 #include "../command/command.h"
 #include "../utils/utils.h"
 
-
+#define NUMBER_COMMANDS_MAX 5
 
 typedef struct  {
-    tCommand commands[NUMBER_COMMANDS];
+    tCommand commands[NUMBER_COMMANDS_MAX];
 } tShell;
 
 void read_commands(tShell *);

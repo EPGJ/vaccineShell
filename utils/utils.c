@@ -1,4 +1,5 @@
 #include "uchar.h"
+#include "utils.h"
 
 
 char *ltrim(char *s)

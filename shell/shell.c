@@ -26,8 +26,8 @@ void read_commands(tShell *shell)
     char* cmd_str;
     int i = -1;
     cmd_str = strtok(line, "|");
-    while(cmd_str!=NULL && (i++) < NUMBER_COMMANDS){
-        shell->commands[i] = treat_command(cmd_str);
+    while(cmd_str!=NULL && (i++) < NUMBER_COMMANDS_MAX){
+        shell->commands[i] = treat_command(trim(cmd_str));
         print_command(shell->commands[i]);
         // printf("(%s)\n", trim(cmd_str));
         cmd_str = strtok(NULL, "|");
