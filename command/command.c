@@ -27,6 +27,7 @@ void exec_command(tCommand command, int in, int out)
 	if ((pid = fork()) < 0)
 	{
 		printf("Could not execute command\n");
+		exit(2); // codigo de erro
 	}
 	if (pid == 0)
 	{
@@ -46,6 +47,8 @@ void exec_command(tCommand command, int in, int out)
 		execvp(command.command, param);
 
 		printf("Could not execute command\n");
+	}else{
+		wait(NULL);
 	}
 }
 

@@ -22,9 +22,8 @@ void clean_screen();
 void type_prompt();
 void handle_sigusr1();
 void handle_sigusr2();
-// void read_command(tShell *);
-// void exec_program(tShell *);
-// int is_exit_command(tShell *);
-// void display(tShell*);
+void exec_commands(tShell *);
+void exec_forground_process(tShell *);
+void exec_background_process(tShell *);
 
 #endif

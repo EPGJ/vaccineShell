@@ -4,7 +4,6 @@
 
 int main()
 {   
-    int pid;
     tShell shell;
     //Cria mascara de sinais bloqueados
     sigset_t block;
@@ -15,7 +14,7 @@ int main()
     sigaddset(&block, SIGQUIT);
     sigaddset(&block, SIGTSTP);
 
-    
+
     struct sigaction susr1 = {0};
     susr1.sa_handler = &handle_sigusr1;
     susr1.sa_flags = SA_RESTART;
@@ -40,22 +39,8 @@ int main()
 
         type_prompt();
         read_commands(&shell);
-
+        exec_commands(&shell);
         
-
-
-        wait(NULL);
-        
-        // pid = fork();
-        // if (pid == 0){
-        //     exec_program(&shell);
-        // }
-        // else{
-        //     wait(NULL);
-        // }
-        // if (is_exit_command(&shell)){
-        //     break;
-        // }
     }
 
     return 0;
