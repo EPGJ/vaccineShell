@@ -35,6 +35,7 @@ void exec_command(tCommand command, int in, int out)
 
 		int n_param = command.number_parameters;
 		char **param = malloc((2 + n_param) * sizeof(char *));
+		// O primeiro argumento precisar ser o comando
 		param[0] = command.command;
 		for (int i = 1; i <= n_param; i++)
 		{

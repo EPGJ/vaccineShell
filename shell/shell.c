@@ -1,5 +1,28 @@
 #include "shell.h"
 
+char * aligator[] = {
+           "\n",
+           "                  _  _\n",
+           "        _ _      (0)(0)-._  _.-'^^'^^'^^'^^'^^'--.\n",
+           "       (.(.)----'`        ^^'                /^   ^^-._\n",
+           "       (    `                 \             |    _    ^^-._\n",
+           "        VvvvvvvVv~~`__,/.._>  /:/:/:/:/:/:/:/\  (_..,______^^-.\n",
+           "         `^^^^^^^^`/  /   /  /`^^^^^^^^^>^^>^`>  >        _`)  )\n",
+           "                   (((`   (((`          (((`  (((`        `'--'^\n",
+           "   I feel weird...\n"
+       };
+
+
+void handle_sigusr1(int sig){
+       for(int i = 0; i < 9; i++){
+           printf("%s", aligator[i]);
+       }
+}
+void handle_sigusr2(int sig){
+    handle_sigusr1(sig);
+}
+
+
 void clean_screen()
 {
     printf("\e[1;1H\e[2J");
