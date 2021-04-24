@@ -30,13 +30,18 @@ void exec_command(tCommand command, int in, int out)
 		exit(2); // codigo de erro
 	}
 	if (pid == 0)
-	{
-		//TODO: faz dup para redirecionar I/O primeiro se for preciso
+	{	
+		//Faz dup para redirecionar I/O primeiro se for preciso
+		if (in != STDIN_FILENO)
+			dup2(STDIN_FILENO, in);
+		if (out != STDOUT_FILENO)
+			dup2(STDOUT_FILENO, out);
+
 		//TODO: vacina se for fg
 
 		int n_param = command.number_parameters;
 		char **param = malloc((2 + n_param) * sizeof(char *));
-		// O primeiro argumento precisar ser o comando
+		// O primeiro argumento precisa ser o comando
 		param[0] = command.command;
 		for (int i = 1; i <= n_param; i++)
 		{
