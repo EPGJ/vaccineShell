@@ -41,7 +41,6 @@ void exec_fg_command(tCommand *cmd) {
 	int pid;
 	if ((pid = fork()) < 0)
 	{
-		printf("Could not execute command\n");
 		exit(2); // codigo de erro
 	}
 	if (pid == 0)
@@ -52,9 +51,10 @@ void exec_fg_command(tCommand *cmd) {
 			perror("Could not set SIG_IGN handler to default action");
 
 		char **param = get_parameters_arr(cmd);
-
-		execvp(cmd->command, param);
-		printf("Could not execute command\n");
+		if(execvp(cmd->command, param)<0){
+			perror("Could not execute command\n");
+		}
+		exit(0);
 	} else {
 		wait(NULL); // vsh espera execução do processo fg criado
 	}
@@ -69,14 +69,23 @@ pid_t exec_bg_command(tCommand *cmd, int** fd, int command_id, int n_commands) {
 	}
 	if (pid == 0)
 	{	
+		for (int i = 0; i < n_commands - 1; i++)
+        {
+            close(fd[i][0]);
+            close(fd[i][1]);
+        }
+
+
+
 		// //Faz dup para redirecionar I/O
 		// dup2(STDIN_FILENO, in);
 		// dup2(STDOUT_FILENO, out);
 		char **param = get_parameters_arr(cmd);
 
-		execvp(cmd->command, param);
-		printf("Could not execute command '%s'\n", cmd->command);
-		raise(SIGKILL);
+		if(execvp(cmd->command, param) <0){
+			printf("Could not execute command '%s'\n", cmd->command);
+		}
+		exit(0);
 	}
 	return pid; // retorna pid do processo filho criado
 }

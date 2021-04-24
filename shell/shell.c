@@ -1,6 +1,5 @@
 #include "shell.h"
 
-
 char *aligator[] = {
     "\n",
     "                  _  _\n",
@@ -73,11 +72,13 @@ void exec_process(tShell *shell)
     if (shell->number_commands == 1)
     {
         tCommand *cmd = &shell->commands[0];
-        if (strcmp(cmd->command, "liberamoita") == 0) {
+        if (strcmp(cmd->command, "liberamoita") == 0)
+        {
             printf("Executa liberamoita\n"); // TODO: implementar comando interno
             return;
         }
-        if (strcmp(cmd->command, "armageddon") == 0) {
+        if (strcmp(cmd->command, "armageddon") == 0)
+        {
             printf("Executa armageddon\n"); // TODO: implementar comando interno
             return;
         }
@@ -91,7 +92,7 @@ void exec_process(tShell *shell)
 
 void exec_background_process(tShell *shell)
 {
-    int pid = fork();
+    pid_t pid = fork();
     if (pid == -1)
     {
         exit(1); // codigo de erro
@@ -104,29 +105,32 @@ void exec_background_process(tShell *shell)
         int i, n_commands = shell->number_commands;
 
         // Cria n_commands-1 pipes
-        int** fd = malloc((n_commands-1)*sizeof(int*));
+        int **fd = malloc((n_commands - 1) * sizeof(int *));
 
-        for (i = 0; i < (n_commands-1); i++) 
+        for (i = 0; i < (n_commands - 1); i++)
         {
-            fd[i] = malloc(2*sizeof(int));
+            fd[i] = malloc(2 * sizeof(int));
             pipe(fd[i]);
         }
         // Executa cada comando
-        for (i = 0 ; i < n_commands; i++) 
+        for (i = 0; i < n_commands; i++)
         {
-            exec_bg_command(&shell->commands[i], fd, i, shell->number_commands);
+            pid_t pid_c = exec_bg_command(&shell->commands[i], fd, i, shell->number_commands);
+            printf("[PID=%d] PROCESS='%s'\n", pid_c, shell->commands->command);
         }
-        for (i = 0 ; i < n_commands-1; i++) 
+        for (i = 0; i < n_commands - 1; i++)
         {
+            close(fd[i][0]);
+            close(fd[i][1]);
             free(fd[i]); // libera matriz fd
         }
+        free(fd);
         // Espera fim da execução dos filhos criados
-        while (1) 
+        while (1)
         {
-            if (((waitpid(-1, NULL, WNOHANG)) == -1) && (errno == ECHILD)) break;
-        } 
+            if (((waitpid(-1, NULL, WNOHANG)) == -1) && (errno == ECHILD))
+                break;
+        }
+        exit(0);
     }
-    // else { // faz com que vsh espere
-    //     wait(NULL);
-    // }
 }
