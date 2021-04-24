@@ -1,7 +1,5 @@
 #include "shell.h"
 
-#define READ 0
-#define WRITE 1
 
 char *aligator[] = {
     "\n",
@@ -74,7 +72,16 @@ void exec_process(tShell *shell)
 {
     if (shell->number_commands == 1)
     {
-        exec_fg_command(shell->commands[0]);
+        tCommand *cmd = &shell->commands[0];
+        if (strcmp(cmd->command, "liberamoita") == 0) {
+            printf("Executa liberamoita\n"); // TODO: implementar comando interno
+            return;
+        }
+        if (strcmp(cmd->command, "armageddon") == 0) {
+            printf("Executa armageddon\n"); // TODO: implementar comando interno
+            return;
+        }
+        exec_fg_command(cmd);
     }
     else
     {
@@ -89,23 +96,37 @@ void exec_background_process(tShell *shell)
     {
         exit(1); // codigo de erro
     }
-    // Esse novo processo criado sera responsavel por criar todos os outros e coloca-los em uma mesma sessao
+    // Esse novo processo criado sera responsavel por criar todos os outros e coloca-los em uma mesma sessão
     else if (pid == 0)
     {
-        setsid();
+        setsid(); // troca processo de seção
 
-        int n_commands = shell->number_commands;
-        // Cria pipes
-        int fd[n_commands-1][2];
-        for (int i = 0; i < n_commands-1; i++) {
+        int i, n_commands = shell->number_commands;
+
+        // Cria n_commands-1 pipes
+        int** fd = malloc((n_commands-1)*sizeof(int*));
+
+        for (i = 0; i < (n_commands-1); i++) 
+        {
+            fd[i] = malloc(2*sizeof(int));
             pipe(fd[i]);
         }
-        
-        for(int i = 0 ; i < n_commands; i++) {
-            exec_bg_command(shell->commands[i], fd, i,shell->number_commands);
+        // Executa cada comando
+        for (i = 0 ; i < n_commands; i++) 
+        {
+            exec_bg_command(&shell->commands[i], fd, i, shell->number_commands);
         }
-        
-    }else{
-        wait(NULL);
+        for (i = 0 ; i < n_commands-1; i++) 
+        {
+            free(fd[i]); // libera matriz fd
+        }
+        // Espera fim da execução dos filhos criados
+        while (1) 
+        {
+            if (((waitpid(-1, NULL, WNOHANG)) == -1) && (errno == ECHILD)) break;
+        } 
     }
+    // else { // faz com que vsh espere
+    //     wait(NULL);
+    // }
 }
