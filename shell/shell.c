@@ -1,5 +1,8 @@
 #include "shell.h"
 
+#define READ 0
+#define WRITE 1
+
 char *aligator[] = {
     "\n",
     "                  _  _\n",
@@ -11,16 +14,12 @@ char *aligator[] = {
     "                   (((`   (((`          (((`  (((`        `'--'^\n",
     "   I feel weird...\n"};
 
-void handle_sigusr1(int sig)
+void handle_sigusr(int sig)
 {
     for (int i = 0; i < 9; i++)
     {
         printf("%s", aligator[i]);
     }
-}
-void handle_sigusr2(int sig)
-{
-    handle_sigusr1(sig);
 }
 
 void clean_screen()
@@ -71,24 +70,20 @@ void type_prompt()
     printf("\033[0m");
 }
 
-void exec_commands(tShell *shell)
+void exec_process(tShell *shell)
 {
     if (shell->number_commands == 1)
     {
-        exec_forground_process(shell);
+        exec_fg_command(shell->commands[0]);
     }
     else
     {
         exec_background_process(shell);
     }
 }
-void exec_forground_process(tShell *shell)
-{
-    exec_command(shell->commands[0], 0, 0);
-}
+
 void exec_background_process(tShell *shell)
 {
-
     int pid = fork();
     if (pid == -1)
     {
@@ -97,9 +92,20 @@ void exec_background_process(tShell *shell)
     // Esse novo processo criado sera responsavel por criar todos os outros e coloca-los em uma mesma sessao
     else if (pid == 0)
     {
-    }
-    else
-    {
-        wait(NULL); // avaliar a necessidade desta chamada, ja que os processos estarao em background
+        setsid();
+
+        int n_commands = shell->number_commands;
+        // Cria pipes
+        int fd[n_commands-1][2];
+        for (int i = 0; i < n_commands-1; i++) {
+            pipe(fd[i]);
+        }
+        
+        for(int i = 0 ; i < n_commands; i++) {
+            exec_bg_command(shell->commands[i], fd, i,shell->number_commands);
+        }
+        
+    }else{
+        wait(NULL);
     }
 }

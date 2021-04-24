@@ -16,13 +16,13 @@ int main()
 
 
     struct sigaction susr1 = {0};
-    susr1.sa_handler = &handle_sigusr1;
+    susr1.sa_handler = &handle_sigusr;
     susr1.sa_flags = SA_RESTART;
     susr1.sa_mask = block;
 
 
     struct sigaction susr2 = {0};
-    susr2.sa_handler = &handle_sigusr2;
+    susr2.sa_handler = &handle_sigusr;
     susr2.sa_flags = SA_RESTART;
     susr2.sa_mask = block;
 
@@ -39,7 +39,7 @@ int main()
 
         type_prompt();
         read_commands(&shell);
-        exec_commands(&shell);
+        exec_process(&shell);
         
     }
 

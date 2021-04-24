@@ -20,10 +20,8 @@ typedef struct  {
 void read_commands(tShell *);
 void clean_screen();
 void type_prompt();
-void handle_sigusr1();
-void handle_sigusr2();
-void exec_commands(tShell *);
-void exec_forground_process(tShell *);
+void handle_sigusr();
+void exec_process(tShell *);
 void exec_background_process(tShell *);
 
 #endif

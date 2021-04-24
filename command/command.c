@@ -21,8 +21,22 @@ tCommand treat_command(char *cmd_str)
 	return cmd;
 }
 
-void exec_command(tCommand command, int in, int out)
-{
+char** get_parameters(tCommand command) {
+	int n_param = command.number_parameters;
+	char **param = malloc((2 + n_param) * sizeof(char *));
+	// O primeiro argumento precisa ser o comando
+	param[0] = command.command;
+	for (int i = 1; i <= n_param; i++)
+	{
+		param[i] = command.parameters[i - 1];
+	}
+	param[n_param + 1] = NULL;
+	
+	return param;
+}
+
+
+void exec_fg_command(tCommand command) {
 	int pid;
 	if ((pid = fork()) < 0)
 	{
@@ -31,29 +45,33 @@ void exec_command(tCommand command, int in, int out)
 	}
 	if (pid == 0)
 	{	
-		//Faz dup para redirecionar I/O primeiro se for preciso
-		if (in != STDIN_FILENO)
-			dup2(STDIN_FILENO, in);
-		if (out != STDOUT_FILENO)
-			dup2(STDOUT_FILENO, out);
+		struct sigaction sa;
+		sa.sa_handler = SIG_IGN;
+		if (sigaction(SIGUSR1, &sa, NULL) == -1 || sigaction(SIGUSR2, &sa, NULL) == -1)
+			perror("Could not set SIGINT handler to default action");
 
-		//TODO: vacina se for fg
-
-		int n_param = command.number_parameters;
-		char **param = malloc((2 + n_param) * sizeof(char *));
-		// O primeiro argumento precisa ser o comando
-		param[0] = command.command;
-		for (int i = 1; i <= n_param; i++)
-		{
-			param[i] = command.parameters[i - 1];
-		}
-		param[n_param + 1] = NULL;
+		char **param = get_parameters(command);
 
 		execvp(command.command, param);
-
 		printf("Could not execute command\n");
-	}else{
+	} else {
 		wait(NULL);
+	}
+}
+
+void exec_bg_command(tCommand command, int** fd, int command_id, int n_commands) {
+	int pid;
+	if ((pid = fork()) < 0)
+	{
+		printf("Could not execute command\n");
+		exit(2); // codigo de erro
+	}
+	if (pid == 0)
+	{	
+
+		// //Faz dup para redirecionar I/O
+		// dup2(STDIN_FILENO, in);
+		// dup2(STDOUT_FILENO, out);
 	}
 }
 

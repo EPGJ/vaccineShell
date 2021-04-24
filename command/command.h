@@ -21,8 +21,8 @@ struct command {
 
 tCommand treat_command();
 void print_command(tCommand command);
-void exec_command(tCommand command, int in, int out); // mudar para shell ? 
-
+void exec_fg_command(tCommand command);
+void exec_bg_command(tCommand command, int** fd, int command_id, int n_commands);
 
 
 #endif
