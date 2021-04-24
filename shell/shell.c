@@ -100,6 +100,6 @@ void exec_background_process(tShell *shell)
     }
     else
     {
-        wait(NULL); // avaliar a necessidade desta chamada, ja que os processos estaram em background
+        wait(NULL); // avaliar a necessidade desta chamada, ja que os processos estarao em background
     }
 }
