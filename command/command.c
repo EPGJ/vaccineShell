@@ -1,5 +1,8 @@
 #include "command.h"
 
+#define READ 0
+#define WRITE 1
+
 tCommand treat_command(char *cmd_str)
 { // cmd_str = "comando arg1 ..."
 	tCommand cmd;
@@ -69,23 +72,34 @@ pid_t exec_bg_command(tCommand *cmd, int** fd, int command_id, int n_commands) {
 	}
 	if (pid == 0)
 	{	
-		for (int i = 0; i < n_commands - 1; i++)
+		/* 
+		// Redireciona entrada
+		if (command_id-1 >= 0) { 	
+			if (dup2(STDIN_FILENO, fd[command_id-1][READ]) < 0) {
+				exit(1);
+			}
+		}
+		// Redireciona saída
+		if (command_id < n_commands-1) {
+			if (dup2(STDOUT_FILENO, fd[command_id][WRITE]) < 0) {
+				exit(1);
+			}
+		}
+		// Fecha file descriptors
+		for (int i = 0; i < n_commands-1; i++)
         {
-            close(fd[i][0]);
-            close(fd[i][1]);
+			close(fd[i][READ]);
+			close(fd[i][WRITE]);
         }
-
-
-
-		// //Faz dup para redirecionar I/O
-		// dup2(STDIN_FILENO, in);
-		// dup2(STDOUT_FILENO, out);
+		*/
+		
+		// Executa execvp
 		char **param = get_parameters_arr(cmd);
 
-		if(execvp(cmd->command, param) <0){
+		if (execvp(cmd->command, param) < 0) {
 			printf("Could not execute command '%s'\n", cmd->command);
+			exit(1);
 		}
-		exit(0);
 	}
 	return pid; // retorna pid do processo filho criado
 }
@@ -102,3 +116,31 @@ void print_command(tCommand *cmd)
 	}
 	printf("\n");
 }
+
+/*
+// Redireciona entrada
+		if (command_id-1 >= 0) { 	
+			dup2(fd[command_id-1][READ], STDIN_FILENO);
+			close(fd[command_id-1][READ]);
+		}
+		// Redireciona saída
+		if (command_id < n_commands-1) {
+			dup2(fd[command_id][WRITE], STDOUT_FILENO);
+			close(fd[command_id][WRITE]);
+		}	
+		
+		// Fecha outros pipes
+		close(fd[0][READ]); 			// fecha leitura do pipe de saída do primeiro comando
+		if (n_commands-2 != 0) {
+			close(fd[n_commands-2][WRITE]);	// fecha escrita do pipe de entrada do último comando
+		}
+		for (int i = 0; i < n_commands-2; i++)
+        {
+			close(fd[i][READ]);
+			close(fd[i-1][WRITE]);
+			if (i != command_id) {
+				close(fd[i-1][READ]);
+				close(fd[i][WRITE]);
+			}
+        }
+*/

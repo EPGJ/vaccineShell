@@ -111,17 +111,17 @@ void exec_background_process(tShell *shell)
         {
             fd[i] = malloc(2 * sizeof(int));
             pipe(fd[i]);
+            close(fd[i][0]);
+            close(fd[i][1]);
         }
         // Executa cada comando
         for (i = 0; i < n_commands; i++)
         {
             pid_t pid_c = exec_bg_command(&shell->commands[i], fd, i, shell->number_commands);
-            printf("[PID=%d] PROCESS='%s'\n", pid_c, shell->commands->command);
+            printf("[PID=%d] PROCESS='%s'\n", pid_c, shell->commands[i].command);
         }
         for (i = 0; i < n_commands - 1; i++)
         {
-            close(fd[i][0]);
-            close(fd[i][1]);
             free(fd[i]); // libera matriz fd
         }
         free(fd);
@@ -133,4 +133,5 @@ void exec_background_process(tShell *shell)
         }
         exit(0);
     }
+    printf("[Ghost pid=%d]\n", pid);
 }
