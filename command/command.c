@@ -67,7 +67,7 @@ pid_t exec_bg_command(tCommand *cmd, int** fd, int command_id, int n_commands) {
 	pid_t pid;
 	if ((pid = fork()) < 0)
 	{
-		printf("Could not execute command\n");
+		perror("erro ao criar processo");
 		exit(2); // codigo de erro
 	}
 	if (pid == 0)
@@ -75,7 +75,7 @@ pid_t exec_bg_command(tCommand *cmd, int** fd, int command_id, int n_commands) {
 		// Redireciona entrada (se comando não for o primeiro)
 		if (command_id-1 >= 0) {
 			if (dup2(fd[command_id-1][READ], STDIN_FILENO) < 0) {
-				printf("erro dup entrada\n");
+				perror("erro dup entrada");
 				exit(1);
 			}
 		}
