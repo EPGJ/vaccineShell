@@ -72,16 +72,17 @@ pid_t exec_bg_command(tCommand *cmd, int** fd, int command_id, int n_commands) {
 	}
 	if (pid == 0)
 	{	
-		/* 
-		// Redireciona entrada
-		if (command_id-1 >= 0) { 	
-			if (dup2(STDIN_FILENO, fd[command_id-1][READ]) < 0) {
+		// Redireciona entrada (se comando não for o primeiro)
+		if (command_id-1 >= 0) {
+			if (dup2(fd[command_id-1][READ], STDIN_FILENO) < 0) {
+				printf("erro dup entrada\n");
 				exit(1);
 			}
 		}
-		// Redireciona saída
+		// Redireciona saída (se comando não for o último)
 		if (command_id < n_commands-1) {
-			if (dup2(STDOUT_FILENO, fd[command_id][WRITE]) < 0) {
+			if (dup2(fd[command_id][WRITE], STDOUT_FILENO) < 0) {
+				printf("erro dup saida\n");
 				exit(1);
 			}
 		}
@@ -91,9 +92,7 @@ pid_t exec_bg_command(tCommand *cmd, int** fd, int command_id, int n_commands) {
 			close(fd[i][READ]);
 			close(fd[i][WRITE]);
         }
-		*/
-		
-		// Executa execvp
+		// Executa comando
 		char **param = get_parameters_arr(cmd);
 
 		if (execvp(cmd->command, param) < 0) {

@@ -103,6 +103,7 @@ void exec_background_process(tShell *shell)
         setsid(); // troca processo de seção
 
         int i, n_commands = shell->number_commands;
+        printf("%d\n", n_commands);
 
         // Cria n_commands-1 pipes
         int **fd = malloc((n_commands - 1) * sizeof(int *));
@@ -117,8 +118,8 @@ void exec_background_process(tShell *shell)
         // Executa cada comando
         for (i = 0; i < n_commands; i++)
         {
-            pid_t pid_c = exec_bg_command(&shell->commands[i], fd, i, shell->number_commands);
-            printf("[PID=%d] PROCESS='%s'\n", pid_c, shell->commands[i].command);
+            pid_t pid_c = exec_bg_command(&shell->commands[i], fd, i, n_commands);
+            printf("[PID=%d] PROCESS(%d/%d)='%s'\n", pid_c, i+1, n_commands, shell->commands[i].command);
         }
         for (i = 0; i < n_commands - 1; i++)
         {
