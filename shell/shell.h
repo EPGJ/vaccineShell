@@ -24,6 +24,8 @@ void clean_screen();
 void type_prompt();
 void handle_sigusr();
 void exec_process(tShell *);
-void exec_background_process(tShell *);
+void exec_background_processes(tShell *);
+void liberamoita(tShell* shell);
+void armageddon(tShell* shell);
 
 #endif

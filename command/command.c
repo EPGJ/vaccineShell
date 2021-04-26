@@ -40,8 +40,8 @@ char** get_parameters_arr(tCommand *cmd) {
 }
 
 
-void exec_fg_command(tCommand *cmd) {
-	int pid;
+pid_t exec_fg_command(tCommand *cmd) {
+	pid_t pid;
 	if ((pid = fork()) < 0)
 	{
 		exit(2); // codigo de erro
@@ -57,32 +57,31 @@ void exec_fg_command(tCommand *cmd) {
 		if(execvp(cmd->command, param)<0){
 			perror("Could not execute command\n");
 		}
-		exit(0);
-	} else {
-		wait(NULL); // vsh espera execução do processo fg criado
+		exit(1);
 	}
+	return pid;
 }
 
 pid_t exec_bg_command(tCommand *cmd, int** fd, int command_id, int n_commands) {
 	pid_t pid;
 	if ((pid = fork()) < 0)
 	{
-		perror("erro ao criar processo");
-		exit(2); // codigo de erro
+		perror("Erro ao criar processo");
+		exit(1); // codigo de erro
 	}
 	if (pid == 0)
 	{	
 		// Redireciona entrada (se comando não for o primeiro)
 		if (command_id-1 >= 0) {
 			if (dup2(fd[command_id-1][READ], STDIN_FILENO) < 0) {
-				perror("erro dup entrada");
+				perror("Erro no redirecionamento de entrada\n");
 				exit(1);
 			}
 		}
 		// Redireciona saída (se comando não for o último)
 		if (command_id < n_commands-1) {
 			if (dup2(fd[command_id][WRITE], STDOUT_FILENO) < 0) {
-				printf("erro dup saida\n");
+				printf("Erro no redirecionamento de saida\n");
 				exit(1);
 			}
 		}
@@ -115,31 +114,3 @@ void print_command(tCommand *cmd)
 	}
 	printf("\n");
 }
-
-/*
-// Redireciona entrada
-		if (command_id-1 >= 0) { 	
-			dup2(fd[command_id-1][READ], STDIN_FILENO);
-			close(fd[command_id-1][READ]);
-		}
-		// Redireciona saída
-		if (command_id < n_commands-1) {
-			dup2(fd[command_id][WRITE], STDOUT_FILENO);
-			close(fd[command_id][WRITE]);
-		}	
-		
-		// Fecha outros pipes
-		close(fd[0][READ]); 			// fecha leitura do pipe de saída do primeiro comando
-		if (n_commands-2 != 0) {
-			close(fd[n_commands-2][WRITE]);	// fecha escrita do pipe de entrada do último comando
-		}
-		for (int i = 0; i < n_commands-2; i++)
-        {
-			close(fd[i][READ]);
-			close(fd[i-1][WRITE]);
-			if (i != command_id) {
-				close(fd[i-1][READ]);
-				close(fd[i][WRITE]);
-			}
-        }
-*/

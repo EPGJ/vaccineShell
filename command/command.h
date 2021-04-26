@@ -21,7 +21,7 @@ struct command {
 
 tCommand treat_command();
 void print_command(tCommand *cmd);
-void exec_fg_command(tCommand *cmd);
+pid_t exec_fg_command(tCommand *cmd);
 pid_t exec_bg_command(tCommand *cmd, int** fd, int command_id, int n_commands);
 
 

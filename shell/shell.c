@@ -30,7 +30,7 @@ void read_commands(tShell *shell)
     char line[1024];
     int len = 0, wspace_count = 0;
 
-    for (;;)
+    while (1)
     {
         int c = fgetc(stdin);
         line[len++] = (char)c;
@@ -43,8 +43,7 @@ void read_commands(tShell *shell)
         }
     }
     // Retorna se linha só contém white-space
-    if (len == wspace_count)
-        return;
+    if (len == wspace_count) return;
 
     // Separa e trata comandos digitados
     char *token, *rest;
@@ -74,114 +73,74 @@ void exec_process(tShell *shell)
         tCommand *cmd = &shell->commands[0];
         if (strcmp(cmd->command, "liberamoita") == 0)
         {
-            printf("Executa liberamoita\n"); // TODO: implementar comando interno
+            liberamoita(shell);
             return;
         }
         if (strcmp(cmd->command, "armageddon") == 0)
         {
-            printf("Executa armageddon\n"); // TODO: implementar comando interno
+            armageddon(shell);
             return;
         }
         exec_fg_command(cmd);
+        wait(NULL);
+        return;
     }
-    else
-    {
-        exec_background_process(shell);
-    }
+    exec_background_processes(shell);
 }
 
-// void exec_background_process(tShell *shell)
-// {
-//     pid_t pid = fork();
-//     if (pid == -1)
-//     {
-//         exit(1); // codigo de erro
-//     }
-//     // Esse novo processo criado sera responsavel por criar todos os outros e coloca-los em uma mesma sessão
-//     else if (pid == 0)
-//     {
-//         setsid(); // troca processo de seção
-
-//         int i, n_commands = shell->number_commands;
-//         // printf("%d\n", n_commands);
-
-//         // Cria n_commands-1 pipes
-//         int **fd = malloc((n_commands - 1) * sizeof(int *));
-
-//         for (i = 0; i < (n_commands - 1); i++)
-//         {
-//             fd[i] = malloc(2 * sizeof(int));
-//             pipe(fd[i]);
-//             close(fd[i][0]);
-//             close(fd[i][1]);
-//         }
-//         // Executa cada comando
-//         for (i = 0; i < n_commands; i++)
-//         {
-//             pid_t pid_c = exec_bg_command(&shell->commands[i], fd, i, n_commands);
-//             printf("[PID=%d] PROCESS(%d/%d)='%s'\n", pid_c, i+1, n_commands, shell->commands[i].command);
-//         }
-//         for (i = 0; i < n_commands - 1; i++)
-//         {
-//             free(fd[i]); // libera matriz fd
-//         }
-//         free(fd);
-//         // Espera fim da execução dos filhos criados
-//         while (1)
-//         {
-//             if (((waitpid(-1, NULL, WNOHANG)) == -1) && (errno == ECHILD))
-//                 break;
-//         }
-//         exit(0);
-//     }
-//     else{
-//         printf("[Ghost pid=%d]\n", pid);
-//         return;
-//     }
-    
-// }
-
-
-void exec_background_process(tShell *shell)
+void exec_background_processes(tShell *shell)
 {
-    pid_t pid = fork();
+    pid_t pid = fork(); //cria processo ghost
     if (pid == -1){
         exit(1); 
     }
     else if (pid == 0){
-        setsid(); 
+        pid_t sid = setsid(); //muda processo ghost de sessão
         int i, n_commands = shell->number_commands;
+
+        // Cria n_commands-1 pipes
         int **fd = malloc((n_commands - 1) * sizeof(int *));
-     
+        for (i = 0; i < n_commands; i++) {
+            fd[i] = malloc(2 * sizeof(int));
+            pipe(fd[i]);
+        }
+        // Executa comandos
         for (i = 0; i < n_commands; i++)
         {
-            if(i< (n_commands - 1)){
-                fd[i] = malloc(2 * sizeof(int));
-                pipe(fd[i]);
-            }
             pid_t pid_c = exec_bg_command(&shell->commands[i], fd, i, n_commands);
-
         }
-        
+        // Fecha pipes
         for (i = 0; i < n_commands - 1; i++)
         {
             close(fd[i][0]);
             close(fd[i][1]);
             free(fd[i]);  
         }
-
-
+        free(fd);
+        // Espera filhos terminarem a execução
         while (1)
         {
             if (((waitpid(-1, NULL, WNOHANG)) == -1) && (errno == ECHILD))
                 break;
         }
-        
-        free(fd);
-        exit(0);
+        exit(0); //encerra execução do processo ghost
     }
-    else{
-        return; 
-    }
-    
+}
+
+/**
+ * Faz com que o shell libere todos os seus descendentes (diretos e indiretos,
+ * isto é, filhos, netos, bisnetos, etc.) que estejam no estado “Zombie” antes
+ * de exibir um novo prompt.
+*/
+void liberamoita(tShell* shell) {
+    printf("Executa liberamoita\n"); // TODO: implementar comando interno
+}
+
+/**
+ * Termina a operação do shell, mas antes disso, ele deve matar todos os seus 
+ * descendentes (diretos e indiretos, isto é, filhos, netos, bisnetos, etc.) 
+ * que ainda estejam rodando.
+*/
+void armageddon(tShell* shell) {
+    printf("Executa armageddon\n"); // TODO: implementar comando interno
 }
