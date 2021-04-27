@@ -14,16 +14,18 @@ int main()
     sigaddset(&block, SIGINT);
     sigaddset(&block, SIGQUIT);
     sigaddset(&block, SIGTSTP);
+    sigaddset(&block, SIGUSR1);
+    sigaddset(&block, SIGUSR2);
 
 
     struct sigaction susr1 = {0};
-    susr1.sa_handler = &handle_sigusr;
+    susr1.sa_handler = &handle_sigusr_vsh;
     susr1.sa_flags = SA_RESTART;
     susr1.sa_mask = block;
 
 
     struct sigaction susr2 = {0};
-    susr2.sa_handler = &handle_sigusr;
+    susr2.sa_handler = &handle_sigusr_vsh;
     susr2.sa_flags = SA_RESTART;
     susr2.sa_mask = block;
 

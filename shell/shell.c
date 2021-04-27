@@ -11,7 +11,7 @@ char *aligator[] = {
     "                   (((`   (((`          (((`  (((`        `'--'^\n",
     "   I feel weird...\n"};
 
-void handle_sigusr(int sig)
+void handle_sigusr_vsh(int sig)
 {
     for (int i = 0; i < 9; i++)
     {
@@ -54,7 +54,6 @@ void read_commands(tShell *shell)
     {
         shell->commands[i] = treat_command(trim(token));
         shell->number_commands++;
-        // print_command(shell->commands[i]);
         token = strtok_r(rest, symbol, &rest);
     }
 }
@@ -82,7 +81,7 @@ void exec_process(tShell *shell)
             return;
         }
         exec_fg_command(cmd);
-        wait(NULL);
+        wait(NULL);//waitpid(pid, NULL, 0);
         return;
     }
     exec_background_processes(shell);
@@ -94,8 +93,9 @@ void exec_background_processes(tShell *shell)
     if (pid == -1){
         exit(1); 
     }
-    else if (pid == 0){
+    if (pid == 0) {
         pid_t sid = setsid(); //muda processo ghost de sessão
+
         int i, n_commands = shell->number_commands;
 
         // Cria n_commands-1 pipes
@@ -118,11 +118,17 @@ void exec_background_processes(tShell *shell)
         }
         free(fd);
         // Espera filhos terminarem a execução
+        int status;
         while (1)
         {
-            if (((waitpid(-1, NULL, WNOHANG)) == -1) && (errno == ECHILD))
-                break;
+            if (((waitpid(-1, &status, WNOHANG)) == -1) && (errno == ECHILD))
+                break; 
+
+            if(status == 10 || status == 12){
+                handle_sigusr_background();
+            } 
         }
+
         exit(0); //encerra execução do processo ghost
     }
 }
@@ -133,7 +139,8 @@ void exec_background_processes(tShell *shell)
  * de exibir um novo prompt.
 */
 void liberamoita(tShell* shell) {
-    printf("Executa liberamoita\n"); // TODO: implementar comando interno
+    int status;
+    while(waitpid(-1, &status, WNOHANG) > 0);
 }
 
 /**
@@ -143,4 +150,13 @@ void liberamoita(tShell* shell) {
 */
 void armageddon(tShell* shell) {
     printf("Executa armageddon\n"); // TODO: implementar comando interno
+    exit(0);
+}
+
+
+void handle_sigusr_background(){
+    
+    pid_t group_id = getpgid(getpid());
+    killpg(group_id, SIGKILL);
+
 }

@@ -22,7 +22,8 @@ typedef struct  {
 void read_commands(tShell *);
 void clean_screen();
 void type_prompt();
-void handle_sigusr();
+void handle_sigusr_vsh();
+void handle_sigusr_background();
 void exec_process(tShell *);
 void exec_background_processes(tShell *);
 void liberamoita(tShell* shell);
