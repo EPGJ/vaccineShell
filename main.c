@@ -5,7 +5,7 @@
 int main()
 {   
     tShell shell;
-
+    shell.session_leaders = init_list();
     //Cria mascara de sinais bloqueados
     sigset_t block;
     //Inicializa mascara
@@ -33,13 +33,15 @@ int main()
     sigaction(SIGUSR1, &susr1, NULL);
     sigaction(SIGUSR2, &susr2, NULL);
 
-
+    
     clean_screen();
     while (1)
     {
         type_prompt();
         read_commands(&shell);
         exec_process(&shell);
+        
+
     }
 
     return 0;

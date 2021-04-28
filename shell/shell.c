@@ -42,6 +42,7 @@ void read_commands(tShell *shell)
             break;
         }
     }
+    
     // Retorna se linha só contém white-space
     if (len == wspace_count) return;
 
@@ -67,6 +68,8 @@ void type_prompt()
 
 void exec_process(tShell *shell)
 {
+    if (shell->number_commands == 0) return;
+
     if (shell->number_commands == 1)
     {
         tCommand *cmd = &shell->commands[0];
@@ -85,6 +88,7 @@ void exec_process(tShell *shell)
         return;
     }
     exec_background_processes(shell);
+    
 }
 
 void exec_background_processes(tShell *shell)
@@ -96,6 +100,7 @@ void exec_background_processes(tShell *shell)
     if (pid == 0) {
         pid_t sid = setsid(); //muda processo ghost de sessão
 
+        
         int i, n_commands = shell->number_commands;
 
         // Cria n_commands-1 pipes
@@ -128,9 +133,10 @@ void exec_background_processes(tShell *shell)
                 handle_sigusr_background();
             } 
         }
-
+        
         exit(0); //encerra execução do processo ghost
     }
+    shell->session_leaders = add_pid(shell->session_leaders, pid);
 }
 
 /**
@@ -149,7 +155,12 @@ void liberamoita(tShell* shell) {
  * que ainda estejam rodando.
 */
 void armageddon(tShell* shell) {
-    printf("Executa armageddon\n"); // TODO: implementar comando interno
+    
+    for (List* p = shell->session_leaders; p != NULL; p = p->next) {
+		killpg(p->pid, SIGKILL);
+	}
+
+    free_list(shell->session_leaders);
     exit(0);
 }
 

@@ -11,15 +11,18 @@
 #include <errno.h>
 #include "../command/command.h"
 #include "../utils/utils.h"
+#include "../utils/list.h"
+
 
 #define NUMBER_COMMANDS_MAX 5
 
 typedef struct  {
     tCommand commands[NUMBER_COMMANDS_MAX];
     int number_commands;
+    List* session_leaders;
 } tShell;
 
-void read_commands(tShell *);
+void read_commands(tShell *); // retorna 1 se apenas \n foi digitado e 0 caso contrario
 void clean_screen();
 void type_prompt();
 void handle_sigusr_vsh();
