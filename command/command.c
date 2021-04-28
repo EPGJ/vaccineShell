@@ -48,16 +48,17 @@ pid_t exec_fg_command(tCommand *cmd) {
 	}
 	if (pid == 0)
 	{	
+		// Vacina processo: processo passa a ignorar os sinais SIGUSR1 e SIGUSR2
 		struct sigaction sa;
 		sa.sa_handler = SIG_IGN;
 		if (sigaction(SIGUSR1, &sa, NULL) == -1 || sigaction(SIGUSR2, &sa, NULL) == -1)
 			perror("Could not set SIG_IGN handler to default action");
-
+		// Executa comando
 		char **param = get_parameters_arr(cmd);
-		if(execvp(cmd->command, param)<0){
+		if (execvp(cmd->command, param) < 0){
 			perror("Could not execute command\n");
+			exit(1);
 		}
-		exit(1);
 	}
 	return pid;
 }
@@ -102,15 +103,3 @@ pid_t exec_bg_command(tCommand *cmd, int** fd, int command_id, int n_commands) {
 	return pid; // retorna pid do processo filho criado
 }
 
-void print_command(tCommand *cmd)
-{
-	printf("command='%s' ", cmd->command);
-
-	int i = 0, qtd_parameters = cmd->number_parameters;
-	while (i < qtd_parameters)
-	{
-		printf("arg[%d]='%s' ", i, cmd->parameters[i]);
-		i++;
-	}
-	printf("\n");
-}

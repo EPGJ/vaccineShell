@@ -129,7 +129,7 @@ void exec_background_processes(tShell *shell)
             if (((waitpid(-1, &status, WNOHANG)) == -1) && (errno == ECHILD))
                 break; 
 
-            if(status == 10 || status == 12){
+            if(status == USR1_SIGNAL || status == USR2_SIGNAL){
                 handle_sigusr_background();
             } 
         }
@@ -139,21 +139,13 @@ void exec_background_processes(tShell *shell)
     shell->session_leaders = add_pid(shell->session_leaders, pid);
 }
 
-/**
- * Faz com que o shell libere todos os seus descendentes (diretos e indiretos,
- * isto é, filhos, netos, bisnetos, etc.) que estejam no estado “Zombie” antes
- * de exibir um novo prompt.
-*/
+
 void liberamoita(tShell* shell) {
     int status;
     while(waitpid(-1, &status, WNOHANG) > 0);
 }
 
-/**
- * Termina a operação do shell, mas antes disso, ele deve matar todos os seus 
- * descendentes (diretos e indiretos, isto é, filhos, netos, bisnetos, etc.) 
- * que ainda estejam rodando.
-*/
+
 void armageddon(tShell* shell) {
     
     for (List* p = shell->session_leaders; p != NULL; p = p->next) {

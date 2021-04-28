@@ -19,9 +19,29 @@ struct command {
     int number_parameters;
 };
 
-tCommand treat_command();
-void print_command(tCommand *cmd);
+
+/* Trata um comando e seus parâmetros;
+ * inputs: ponteiro char
+ * output: nenhum;
+ * pre-condicao: ponteiro char válido;
+ * pos-condicao: string (char *) tratada e salva no TAD tCommand.
+ */
+ tCommand treat_command(char *);
+
+/* Executa os processos em foreground;
+ * inputs: ponteiro to tipo tCommand;
+ * output: nenhum;
+ * pre-condicao: ponteiro tCommand válido;
+ * pos-condicao: Comando executando em foreground 
+ */
 pid_t exec_fg_command(tCommand *cmd);
+
+/* Executa os processos em background
+ * inputs: ponteiro do tipo tCommand;
+ * output: nenhum;
+ * pre-condicao: ponteiro tCommand válido;
+ * pos-condicao: comando executados em background.
+ */
 pid_t exec_bg_command(tCommand *cmd, int** fd, int command_id, int n_commands);
 
 
