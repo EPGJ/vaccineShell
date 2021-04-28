@@ -39,9 +39,7 @@ int main()
     {
         type_prompt();
         read_commands(&shell);
-        exec_process(&shell);
-        
-
+        exec_process(&shell);        
     }
 
     return 0;

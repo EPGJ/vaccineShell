@@ -105,7 +105,7 @@ void exec_background_processes(tShell *shell)
 
         // Cria n_commands-1 pipes
         int **fd = malloc((n_commands - 1) * sizeof(int *));
-        for (i = 0; i < n_commands; i++) {
+        for (i = 0; i < n_commands - 1; i++) {
             fd[i] = malloc(2 * sizeof(int));
             pipe(fd[i]);
         }
