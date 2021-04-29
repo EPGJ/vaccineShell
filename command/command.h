@@ -34,12 +34,12 @@ struct command {
  * pre-condicao: ponteiro tCommand válido;
  * pos-condicao: Comando executando em foreground 
  */
-pid_t exec_fg_command(tCommand *cmd);
+void exec_fg_command(tCommand *cmd);
 
 /* Executa os processos em background
  * inputs: ponteiro do tipo tCommand;
- * output: nenhum;
- * pre-condicao: ponteiro tCommand válido;
+ * output: pid do processo criado;
+ * pre-condicao: ponteiro tCommand válido, n_commands > 1, e 0 <= command_id < n_commands;
  * pos-condicao: comando executados em background.
  */
 pid_t exec_bg_command(tCommand *cmd, int** fd, int command_id, int n_commands);

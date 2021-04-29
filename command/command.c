@@ -40,7 +40,7 @@ char** get_parameters_arr(tCommand *cmd) {
 }
 
 
-pid_t exec_fg_command(tCommand *cmd) {
+void exec_fg_command(tCommand *cmd) {
 	pid_t pid;
 	if ((pid = fork()) < 0)
 	{
@@ -60,7 +60,20 @@ pid_t exec_fg_command(tCommand *cmd) {
 			exit(1);
 		}
 	}
-	return pid;
+	//Faz vsh ignorar SIGINT enquanto processo filho executa
+	struct sigaction sa = {0}, old;
+    sa.sa_handler = SIG_IGN;
+    sa.sa_flags = SA_RESTART;
+
+	if (sigaction(SIGINT, &sa, &old) < 0)
+      	perror("Failed to ignore SIGINT");
+
+	waitpid(pid, NULL, 0); //espera fim da execução do filho
+
+	//Reestabelece antigo handler para SIGINT
+	if (sigaction(SIGINT, &old, NULL) < 0)
+      	perror("Failed to set old handler for SIGINT");
+
 }
 
 pid_t exec_bg_command(tCommand *cmd, int** fd, int command_id, int n_commands) {

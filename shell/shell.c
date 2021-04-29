@@ -84,7 +84,6 @@ void exec_process(tShell *shell)
             return;
         }
         exec_fg_command(cmd);
-        wait(NULL);//waitpid(pid, NULL, 0);
         return;
     }
     exec_background_processes(shell);
